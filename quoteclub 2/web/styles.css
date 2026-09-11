@@ -1,0 +1,473 @@
+/* Quote Club — dark, lime accents, purple for points.
+   Layout rule that matters most here: nothing may exceed the viewport
+   width. One gutter is declared on .app; every child is min-width:0 so a
+   flex/grid item can actually shrink, and every control wraps. */
+
+:root {
+  --bg: #0b0d0b;
+  --panel: #14181450;
+  --panel-solid: #141814;
+  --line: #23292350;
+  --line-solid: #232923;
+  --ink: #e8f0e6;
+  --muted: #8a978a;
+  --lime: #b6ff3d;
+  --lime-dim: #7fbf24;
+  --purple: #b58cff;
+  --danger: #ff7a6b;
+  --radius: 14px;
+  --gutter: 16px;
+  --tap: 44px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Belt and braces against a stray wide child on a phone. */
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+  padding-block: 0 calc(24px + env(safe-area-inset-bottom));
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------- topbar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 12px calc(12px + env(safe-area-inset-top, 0px) * 0);
+  padding-top: calc(12px + env(safe-area-inset-top));
+  background: linear-gradient(var(--bg) 75%, transparent);
+  min-width: 0;
+}
+.brand {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 8px 0;
+  font: inherit;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--lime);
+  font-size: 1.05rem;
+  white-space: nowrap;
+  cursor: pointer;
+  min-height: 36px;
+}
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--panel-solid);
+  border: 1px solid var(--line-solid);
+  border-radius: 999px;
+  min-width: 0;
+  flex-shrink: 1;
+}
+.tab {
+  flex: 0 1 auto;
+  min-width: 0;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 10px 14px;   /* keeps the tab >= 36px tall for thumbs */
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab.is-active { background: var(--lime); color: #0b0d0b; }
+
+/* ---------------------------------------------------------- blocks */
+.view { min-width: 0; }
+.card {
+  background: var(--panel-solid);
+  border: 1px solid var(--line-solid);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-block: 12px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.h1 { font-size: 1.25rem; margin: 0 0 8px; letter-spacing: -0.02em; }
+.h2 { font-size: 1rem; margin: 0; letter-spacing: -0.01em; }
+.muted { color: var(--muted); }
+.small { font-size: 0.8125rem; }
+
+.field { display: block; margin-block: 12px; min-width: 0; }
+.field > span {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+input[type="text"], input[type="search"], input[type="url"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  /* 16px exactly: anything smaller makes iOS Safari zoom on focus. */
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  background: #0f130f;
+  border: 1px solid var(--line-solid);
+  border-radius: 10px;
+  padding: 11px 12px;
+  min-height: var(--tap);
+  appearance: none;
+}
+input:focus-visible, .btn:focus-visible, .tab:focus-visible, .handle:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+.row > * { min-width: 0; }
+
+.btn {
+  appearance: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: #1b211b;
+  border: 1px solid var(--line-solid);
+  border-radius: 10px;
+  padding: 11px 16px;
+  min-height: var(--tap);
+  cursor: pointer;
+  /* Long labels shrink and wrap instead of pushing the page sideways. */
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+.btn:active { transform: translateY(1px); }
+.btn[disabled] { opacity: 0.45; cursor: default; }
+.btn-primary { background: var(--lime); border-color: var(--lime); color: #0b0d0b; }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn-sm { font-size: 0.8125rem; padding: 7px 10px; min-height: 36px; }
+.btn-block { display: block; width: 100%; margin-top: 8px; }
+.btn-danger { color: var(--danger); }
+
+.msg {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin: 10px 0 0;
+  overflow-wrap: anywhere;
+}
+.msg.inline { margin: 0; }
+.msg.err { color: var(--danger); }
+.msg.ok { color: var(--lime-dim); }
+
+.advanced { margin-block: 8px; }
+.advanced > summary {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  cursor: pointer;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+.advanced > input { margin-top: 8px; }
+
+/* ---------------------------------------------------------- search */
+.progress { margin-top: 12px; }
+.progress-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.log {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  max-height: 190px;
+  overflow-y: auto;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+.log li {
+  padding: 4px 0;
+  border-top: 1px solid var(--line-solid);
+  overflow-wrap: anywhere;
+}
+.log li.ok { color: var(--lime-dim); }
+.log li.bad { color: #a08078; }
+
+.results { display: grid; gap: 8px; margin-top: 12px; }
+.result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  background: #0f130f;
+  border: 1px solid var(--line-solid);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  color: var(--ink);
+  font: inherit;
+  min-width: 0;
+}
+.result.is-active { border-color: var(--lime); }
+.result .meta { font-size: 0.8125rem; color: var(--muted); min-width: 0; }
+
+/* ---------------------------------------------------------- editor */
+.editor-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.readout {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: var(--lime);
+  white-space: nowrap;
+}
+
+/* The handles are positioned in percent of THIS box, and the SVG fills
+   exactly the same box with a 0..1000 user-space viewBox and
+   preserveAspectRatio="none". One coordinate system, three consumers:
+   bars, selection rect, handles. They cannot drift apart. */
+.wave-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: 132px;
+  touch-action: none;         /* let us own the drag gesture */
+  overscroll-behavior: contain;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.wave {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: #0f130f;
+  border: 1px solid var(--line-solid);
+}
+.wave-bg { fill: transparent; }
+#wave-bars rect { fill: #5c7355; }
+.sel { fill: rgba(182, 255, 61, 0.20); stroke: none; pointer-events: none; }
+.playhead { stroke: var(--lime); stroke-width: 2; vector-effect: non-scaling-stroke; }
+
+.handle {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: var(--tap);
+  /* left is set in JS to the selection edge; this centres the hit area
+     on that exact position. */
+  transform: translateX(-50%);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: ew-resize;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.handle > i {
+  display: block;
+  width: 3px;
+  height: 100%;
+  background: var(--lime);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px #0b0d0b;
+}
+.handle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 34px;
+  margin: -17px 0 0 -9px;
+  background: var(--lime);
+  border-radius: 6px;
+}
+
+.nudge {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-block: 10px;
+}
+.nudge .btn { flex: 1 1 auto; min-width: 0; }
+
+/* ---------------------------------------------------------- points */
+.points { margin-block: 14px; }
+.points-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.pts { color: var(--purple); font-size: 1.125rem; }
+.chip {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--purple);
+  border: 1px solid #3b2f57;
+  background: #1a1424;
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+input[type="range"] {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  accent-color: var(--purple);
+  height: var(--tap);
+}
+
+/* ---------------------------------------------------------- rounds */
+.round { }
+.round-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.round audio {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin-block: 10px;
+}
+.answer-reveal {
+  border: 1px dashed #3b2f57;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--purple);
+  overflow-wrap: anywhere;
+}
+.guesses { list-style: none; padding: 0; margin: 10px 0 0; font-size: 0.875rem; }
+.guesses li { padding: 3px 0; color: var(--muted); overflow-wrap: anywhere; }
+.guesses li.correct { color: var(--lime-dim); }
+
+.score-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  border-top: 1px solid var(--line-solid);
+}
+.score-row .n { color: var(--purple); font-size: 1.25rem; font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+
+/* ---------------------------------------------------------- lobby */
+.or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block: 18px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.or::before, .or::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--line-solid);
+}
+
+/* ---------------------------------------------------------- room bar */
+.roombar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+.roombar-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.code {
+  font-size: 1.25rem;
+  letter-spacing: 0.12em;
+  color: var(--lime);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.roombar .msg { flex: 1 1 100%; margin: 0; }
+#roster { overflow-wrap: anywhere; }
+
+/* ---------------------------------------------------- per-round table */
+.table {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  font-size: 0.875rem;
+  border-top: 1px solid var(--line-solid);
+}
+.table li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line-solid);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.table li > span { white-space: nowrap; }
+.table li.st-solved { color: var(--ink); }
+.table li.st-solved > span { color: var(--purple); font-weight: 700; }
+.table li.st-revealed > span { color: #7a8479; }

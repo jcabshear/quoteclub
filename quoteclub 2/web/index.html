@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- No user-scalable=no: pinch zoom stays available. Inputs are 16px in
+     CSS, which is what actually stops iOS auto-zooming on focus. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d0b">
+<meta name="description" content="A party game of guessing films and shows from tiny audio clips.">
+<title>Quote Club</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div id="app" class="app">
+  <header class="topbar">
+    <button id="brand" class="brand" type="button" title="Back to your rooms">Quote&nbsp;Club</button>
+    <nav class="tabs" id="tabs" role="tablist" hidden>
+      <button class="tab is-active" data-view="make" role="tab">Make</button>
+      <button class="tab" data-view="play" role="tab">Play</button>
+      <button class="tab" data-view="score" role="tab">Score</button>
+    </nav>
+  </header>
+
+  <!-- ------------------------------------------------- lobby -->
+  <section id="view-lobby" class="view">
+    <div class="card">
+      <h1 class="h1">Guess the film from a sliver of sound.</h1>
+      <p class="muted">Someone finds a line, crops it as tight as they dare,
+        and everyone else guesses. Share a room code — no accounts, no
+        sign-in, as many groups at once as you like.</p>
+
+      <label class="field">
+        <span>What should people call you?</span>
+        <input id="me-name" type="text" autocomplete="nickname" placeholder="Josiah">
+      </label>
+
+      <div class="row">
+        <button id="make-room" class="btn btn-primary">Start a room</button>
+      </div>
+
+      <div class="or"><span>or join one</span></div>
+
+      <label class="field">
+        <span>Room code</span>
+        <input id="code" type="text" inputmode="text" autocapitalize="characters"
+               autocomplete="off" spellcheck="false" placeholder="ABC-DEF" maxlength="9">
+      </label>
+      <button id="join" class="btn btn-block">Join room</button>
+      <p id="lobby-msg" class="msg" hidden></p>
+    </div>
+
+    <div id="my-rooms" class="card" hidden>
+      <h2 class="h2">Your rooms</h2>
+      <div id="my-rooms-list"></div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------- room bar -->
+  <div id="roombar" class="roombar card" hidden>
+    <div class="roombar-main">
+      <span class="muted small">Room</span>
+      <strong id="room-code" class="code">ABC-DEF</strong>
+    </div>
+    <div class="row">
+      <button id="share" class="btn btn-sm">Share</button>
+      <span id="roster" class="muted small"></span>
+    </div>
+    <p id="turn-note" class="msg"></p>
+  </div>
+
+  <!-- ------------------------------------------------- make -->
+  <section id="view-make" class="view" hidden>
+    <div class="card">
+      <label class="field">
+        <span>Type the quote</span>
+        <input id="q" type="search" enterkeyhint="search" autocomplete="off"
+               spellcheck="false" placeholder="you were this close to losing your job">
+      </label>
+      <details class="advanced">
+        <summary>or paste a link to the scene</summary>
+        <input id="q-url" type="url" inputmode="url" autocomplete="off"
+               placeholder="https://…">
+      </details>
+      <button id="search" class="btn btn-primary btn-block">Find the audio</button>
+      <div id="progress" class="progress" hidden>
+        <div class="progress-head">
+          <span id="progress-phase">Searching…</span>
+          <button id="search-cancel" class="btn btn-ghost btn-sm">Stop</button>
+        </div>
+        <ul id="progress-log" class="log"></ul>
+      </div>
+      <div id="results" class="results"></div>
+      <p id="empty" class="msg" hidden></p>
+    </div>
+
+    <div id="editor" class="card" hidden>
+      <div class="editor-head">
+        <h2 class="h2">Crop it</h2>
+        <span id="sel-readout" class="readout">0.000 – 0.000 s</span>
+      </div>
+
+      <div id="wave-wrap" class="wave-wrap">
+        <svg id="wave" class="wave" preserveAspectRatio="none" viewBox="0 0 1000 100"
+             aria-label="waveform">
+          <rect class="wave-bg" x="0" y="0" width="1000" height="100"></rect>
+          <g id="wave-bars" class="wave-bars"></g>
+          <rect id="sel-rect" class="sel" x="0" y="0" width="1000" height="100"></rect>
+          <line id="playhead" class="playhead" x1="0" y1="0" x2="0" y2="100" hidden></line>
+        </svg>
+        <button id="h-start" class="handle" aria-label="selection start"
+                role="slider" aria-valuemin="0" aria-valuenow="0"><i></i></button>
+        <button id="h-end" class="handle" aria-label="selection end"
+                role="slider" aria-valuemin="0" aria-valuenow="0"><i></i></button>
+      </div>
+
+      <div class="nudge">
+        <button class="btn btn-sm" data-nudge="start,-0.05">◀ start</button>
+        <button class="btn btn-sm" data-nudge="start,0.05">start ▶</button>
+        <button class="btn btn-sm" data-nudge="end,-0.05">◀ end</button>
+        <button class="btn btn-sm" data-nudge="end,0.05">end ▶</button>
+      </div>
+
+      <div class="row">
+        <button id="preview" class="btn btn-primary">Play selection</button>
+        <span id="preview-msg" class="msg inline" hidden></span>
+      </div>
+
+      <label class="field">
+        <span>Answer <em class="muted">(hidden until someone gets it)</em></span>
+        <input id="answer" type="text" autocomplete="off" placeholder="The Incredibles">
+      </label>
+
+      <div class="points">
+        <div class="points-head">
+          <span>Worth <strong id="points-val" class="pts">25</strong> pts</span>
+          <span id="points-label" class="chip">fair</span>
+        </div>
+        <input id="points" type="range" min="1" max="100" value="25">
+        <p id="points-why" class="muted small"></p>
+      </div>
+
+      <button id="send" class="btn btn-primary btn-block">Send to the room</button>
+      <p id="send-msg" class="msg" hidden></p>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------- play -->
+  <section id="view-play" class="view" hidden>
+    <div id="rounds"></div>
+  </section>
+
+  <!-- ------------------------------------------------- score -->
+  <section id="view-score" class="view" hidden>
+    <div class="card">
+      <h2 class="h2">Scoreboard</h2>
+      <div id="score-body"></div>
+      <p class="muted small">Only guessers score. Sending a brutal clip earns
+        you nothing — it just puts more on the table for everyone else.</p>
+      <button id="leave" class="btn btn-ghost btn-sm">Leave this room</button>
+    </div>
+  </section>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>
