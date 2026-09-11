@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# local data dir: sqlite file + saved clips (QC_DATA_DIR)
+data/
+*.sqlite
+*.sqlite3
